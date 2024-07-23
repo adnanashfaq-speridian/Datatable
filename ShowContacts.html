@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title="Contact Lists">
+        <template if:true={listOfContacts}>
+            <div style="height: 300px;">
+                <lightning-datatable
+                        key-field="id"
+                        data={listOfContacts}
+                        onrowselection={handleRowSelection}
+                        draft-values={draftValues}
+                        columns={columns}
+                        onsave={handleSave}>
+                </lightning-datatable>
+            </div>
+          </template>
+        <template if:false={listOfContacts}>
+            <p>No contacts to display.</p>
+        </template>
+    </lightning-card>
+</template>
