@@ -1,5 +1,5 @@
-import { LightningElement , api, wire } from 'lwc';
-import updateContactEmail1 from '@salesforce/apex/ContactsDMLController.updateContactEmail';
+import { LightningElement , api, wire , track} from 'lwc';
+import getListOfCon from '@salesforce/apex/ContactsDMLController.getListOfCon';
 import {updateRecord} from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';	
 import { refreshApex } from '@salesforce/apex';
@@ -7,12 +7,14 @@ import { refreshApex } from '@salesforce/apex';
 export default class ShowContacts extends LightningElement {
 
     @api listOfContacts;
+    @track lstOfCon = [];
     //contacts;
-
+    connectedCallback(){
+        console.log('listOfContacts === '+JSON.stringify(this.listOfContacts));
+    }
     columns = [
-        { label: 'Id', fieldName: 'Id', type: 'text' },
         { label: 'Name', fieldName: 'Name', type: 'text' },
-        { label: 'Email', fieldName: 'Email', type: 'email' , editable : true},
+        { label: 'Renewal Date', fieldName: 'Renewal_Date__c', type: 'date-local' ,timeZone: 'UTC-5' , editable : true},
         // Add more columns as needed
     ];
     draftValues = [];
@@ -39,26 +41,39 @@ export default class ShowContacts extends LightningElement {
         });
     }
 
-    ShowToast(){
+    ShowToast(title, message, variant, mode){
         const evt = new ShowToastEvent({
             title: title,
             message: message,
             variant: variant,
-            mode:mode
+            mode: mode
         });
         this.dispatchEvent(evt);
+        
     }
 
     async refresh(){
         await refreshApex(this.listOfContacts);
     }
 
+    /*@wire(getListOfCon, { contacts: '$listOfContacts' })
+    wiredContacts(result) {
+        //this.lstOfCon = result;
+        
+        if (result.data) {
+            this.lstOfCon = result.data;
+            console.log('resutl --- '+JSON.stringify(this.lstOfCon));
+        } else if (result.error) {
+            console.error('Error fetching contacts:', result.error);
+        }
+    }
+    
     updateContactEmail() {
 
         updateContactEmail1({contacts: this.listOfContacts})
             .then(result => {
-                console.log('result: ' + result);
+                 this.lstOfCon = result;
             })
 
-    }
+    }*/
 }
